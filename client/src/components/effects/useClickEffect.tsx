@@ -1,49 +1,47 @@
-
-import * as React from "react";
+import * as React from 'react';
 
 export const useClickEffect = () => {
-  const [effects, setEffects] = React.useState<
-    { id: number; x: number; y: number }[]
-  >([]);
+  const [effects, setEffects] = React.useState<Array<{ id: string; x: number; y: number }>>([]);
 
-  const createClickEffect = (e: React.MouseEvent) => {
+  const createClickEffect = React.useCallback((e: React.MouseEvent) => {
     const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    const newEffect = { id: Date.now(), x, y };
-    setEffects((prev) => [...prev, newEffect]);
-  };
+    const id = Math.random().toString(36).substr(2, 9);
 
-  const handleAnimationEnd = (id: number) => {
-    setEffects((prev) => prev.filter((effect) => effect.id !== id));
-  };
+    setEffects(prev => [...prev, { id, x, y }]);
+
+    setTimeout(() => {
+      setEffects(prev => prev.filter(effect => effect.id !== id));
+    }, 1000);
+  }, []);
 
   const effectsContainer = (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden">
-      {effects.map(({ id, x, y }) => (
+    <>
+      {effects.map(effect => (
         <div
-          key={id}
-          className="absolute w-1 h-1 bg-purple-400 rounded-full animate-ripple"
-          style={{ left: x, top: y }}
-          onAnimationEnd={() => handleAnimationEnd(id)}
-        />
+          key={effect.id}
+          className="absolute pointer-events-none"
+          style={{
+            left: effect.x,
+            top: effect.y,
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 bg-gradient-to-r from-yellow-400 to-pink-400 rounded-full animate-ping"
+              style={{
+                transform: `rotate(${i * 45}deg) translateY(-${12 + Math.random() * 8}px)`,
+                animationDelay: `${i * 50}ms`,
+                animationDuration: '800ms',
+              }}
+            />
+          ))}
+        </div>
       ))}
-      <style>{`
-        @keyframes ripple {
-          0% {
-            transform: scale(1);
-            opacity: 0.6;
-          }
-          100% {
-            transform: scale(50);
-            opacity: 0;
-          }
-        }
-        .animate-ripple {
-          animation: ripple 0.6s linear;
-        }
-      `}</style>
-    </div>
+    </>
   );
 
   return { createClickEffect, effectsContainer };

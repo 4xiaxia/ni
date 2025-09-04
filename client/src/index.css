@@ -29,7 +29,7 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 1.5rem; /* 24px */
+    --radius: 1.8rem; /* 24px */
   }
   .dark {
     --background: 220 10% 10%;
@@ -65,8 +65,24 @@
   }
   body {
     @apply bg-background text-foreground;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-      "Helvetica Neue", Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  #root {
+    width: 100%;
+    max-width: 1940px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  @media (min-width: 768px) {
+    #root {
+      width: 95%;
+    }
   }
 }
 
@@ -81,5 +97,28 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none; /* Chrome、Safari和Opera */
+  }
+}
+
+/* Claymorphism helpers */
+@layer components {
+  .clay-card {
+    border-radius: 26px;
+    box-shadow: 35px 35px 68px 0px rgba(145, 192, 255, 0.06), inset -8px -8px 16px 0px rgba(255,255,255,0.6), inset 0px 11px 28px 0px rgba(255,255,255,0.4);
+    background: rgba(255,255,255,0.9);
+  }
+
+  .clay-badge {
+    border-radius: 9999px;
+    padding: 0.125rem 0.5rem;
+    font-weight: 600;
+    box-shadow: 4px 6px 14px rgba(0,0,0,0.04), inset 0px 6px 10px rgba(255,255,255,0.6);
+    font-size: 0.75rem;
+  }
+
+  .clay-iframe {
+    border-radius: 26px;
+    box-shadow: inset -8px -8px 16px rgba(255,255,255,0.6), 35px 35px 68px rgba(145,192,255,0.06);
+    overflow: hidden;
   }
 }

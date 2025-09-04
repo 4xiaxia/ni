@@ -1,21 +1,15 @@
 
 import * as React from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { NavigationProvider } from "./components/navigation/NavigationProvider";
 import { MainContainer } from "./components/layout/MainContainer";
 import { AdminPage } from "./components/pages/AdminPage";
 
 function App() {
-  const [route, setRoute] = React.useState(window.location.pathname);
+  const location = useLocation();
+  const route = location.pathname;
 
-  React.useEffect(() => {
-    const handlePopState = () => {
-      setRoute(window.location.pathname);
-    };
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, []);
-
-  // 简单路由
+  // Simple router
   if (route.startsWith("/admin")) {
     return <AdminPage />;
   }

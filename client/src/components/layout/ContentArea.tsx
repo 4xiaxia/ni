@@ -15,9 +15,9 @@ export const ContentArea = () => {
         return <HomePage />;
       case "knowledge":
         return <KnowledgePage />;
-      case "tools": // 对应 'llm&agent'
+      case "tools": // Corresponds to 'llm&agent'
         return <ToolsPage />;
-      case "trending": // 对应 'free chat'
+      case "trending": // Corresponds to 'free chat'
         return <TrendingPage />;
       default:
         return <HomePage />;
@@ -26,7 +26,9 @@ export const ContentArea = () => {
 
   return (
     <div className="flex-1 p-6 pb-24 overflow-hidden">
-      <div className="h-full">{renderContent()}</div>
+      <div className="h-full">
+        {renderContent()}
+      </div>
     </div>
   );
 };

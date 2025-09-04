@@ -1,89 +1,141 @@
-
+import * as React from 'react';
 import {
-  Bot,
-  BrainCircuit,
-  Code,
-  Database,
-  FlaskConical,
-  Globe,
-  GraduationCap,
   MessageSquare,
-  PenTool,
-  Share2,
-  Sigma,
-  Sparkles,
-} from "lucide-react";
+  BrainCircuit,
+  ImageIcon,
+  Search,
+  Film,
+  FileText,
+} from 'lucide-react';
 
-const KNOWLEDGE_BASES_KEY = "ai4free_knowledge_bases";
+export const KNOWLEDGE_BASES_KEY = 'ai4free_knowledge_bases';
 
-const defaultKnowledgeBases = [
+const icons = {
+  MessageSquare,
+  BrainCircuit,
+  ImageIcon,
+  Search,
+  Film,
+  FileText,
+};
+
+export type TagType = '推荐' | '免费' | '热门' | undefined;
+
+export interface KnowledgeBase {
+  id: string;
+  name: string;
+  description?: string;
+  url: string;
+  iconName?: keyof typeof icons;
+  icon?: React.ComponentType<any>;
+  // new fields
+  order?: number; // sorting order (smaller first)
+  tag?: TagType; // optional tag
+  iframeStrategy?: 'embed' | 'snapshot'; // 必选一项，当在 admin 保存时确保有值
+  showOnHome?: boolean; // whether to show on homepage
+  category?: string; // 分类显示名称
+}
+
+const defaultKnowledgeBases: KnowledgeBase[] = [
   {
-    id: "chatgpt",
-    name: "ChatGPT 3.5",
-    description: "通用对话模型",
-    url: "https://chat.openai.com",
-    icon: MessageSquare,
+    id: 'chatgpt',
+    name: '国家超算中心',
+    description: 'deepseek、千问、minimax不限量可用。',
+    url: 'https://www.scnet.cn/ui/chatbot/',
+    iconName: 'MessageSquare',
+    order: 1,
+    tag: '推荐',
+    iframeStrategy: 'embed',
+    showOnHome: true,
+    category: '聊天',
   },
   {
-    id: "claude",
-    name: "Claude Sonnet",
-    description: "注重安全和创造力的模型",
-    url: "https://claude.ai",
-    icon: PenTool,
+    id: 'claude',
+    name: '海外GPT模型',
+    description: '不限次、免注册、GPT4.1系列国内可用',
+    url: 'https://freeai.aihub.ren/chat',
+    iconName: 'BrainCircuit',
+    order: 2,
+    tag: '免费',
+    iframeStrategy: 'embed',
+    showOnHome: true,
+    category: '聊天',
   },
   {
-    id: "perplexity",
-    name: "Perplexity",
-    description: "对话式搜索引擎",
-    url: "https://www.perplexity.ai/",
-    icon: Globe,
+    id: 'midjourney',
+    name: 'prompt提示词',
+    description: '在线查询、收录全网高频提词库',
+    url: 'https://www.aishort.top/',
+    iconName: 'ImageIcon',
+    order: 3,
+    tag: undefined,
+    iframeStrategy: 'snapshot',
+    showOnHome: true,
+    category: '图片',
   },
   {
-    id: "gemini",
-    name: "Gemini",
-    description: "Google 的多模态模型",
-    url: "https://gemini.google.com/",
-    icon: Sparkles,
+    id: 'perplexity',
+    name: '数据报告搜索',
+    description: '行业报告、数据剖析、深度分析报告',
+    url: 'https://dongcha.info/',
+    iconName: 'Search',
+    order: 4,
+    tag: '热门',
+    iframeStrategy: 'embed',
+    showOnHome: false,
+    category: '搜索',
   },
   {
-    id: "kimi",
-    name: "Kimi Chat",
-    description: "支持长文本的智能助手",
-    url: "https://kimi.moonshot.cn/",
-    icon: BrainCircuit,
+    id: 'Runway',
+    name: 'AgentTeam工作流工具',
+    description: '在线编排、支持自用api、多智能体工作流',
+    url: 'https://think-five.vercel.app/',
+    iconName: 'Film',
+    order: 5,
+    tag: undefined,
+    iframeStrategy: 'embed',
+    showOnHome: false,
+    category: '工作流',
   },
   {
-    id: "coze",
-    name: "Coze",
-    description: "字节跳动旗下 AI Bot 平台",
-    url: "https://www.coze.com/home",
-    icon: Bot,
+    id: 'notion',
+    name: 'prompt指令调优工具',
+    description: '同模型/不同模型效果对比、参数调优/结构化',
+    url: 'https://my-puce-two.vercel.app/',
+    iconName: 'FileText',
+    order: 6,
+    tag: undefined,
+    iframeStrategy: 'snapshot',
+    showOnHome: false,
+    category: '工具',
   },
 ];
 
-export const getKnowledgeBases = () => {
+export const getKnowledgeBases = (): KnowledgeBase[] => {
   try {
-    const storedBases = localStorage.getItem(KNOWLEDGE_BASES_KEY);
-    if (storedBases) {
-      const parsed = JSON.parse(storedBases);
-      // 重新附加图标函数
-      return parsed.map((item) => {
-        const defaultItem = defaultKnowledgeBases.find((d) => d.id === item.id);
-        return { ...item, icon: defaultItem ? defaultItem.icon : Bot };
-      });
-    }
+    const storedData = localStorage.getItem(KNOWLEDGE_BASES_KEY);
+    const data = storedData ? JSON.parse(storedData) : defaultKnowledgeBases;
+    return (data as any[]).map((item: any) => ({
+      ...item,
+      icon: icons[item.iconName] || MessageSquare,
+    }))
+    // ensure sorting by order
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   } catch (error) {
-    console.error("Failed to parse knowledge bases from localStorage", error);
+    console.error('Failed to parse knowledge bases from localStorage', error);
+    return defaultKnowledgeBases.map(item => ({
+      ...item,
+      icon: icons[item.iconName] || MessageSquare,
+    })).sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   }
-  return defaultKnowledgeBases;
 };
 
-export const saveKnowledgeBases = (bases) => {
+export const saveKnowledgeBases = (data: KnowledgeBase[]) => {
   try {
-    // 存储前移除图标函数
-    const storableBases = bases.map(({ icon, ...rest }) => rest);
-    localStorage.setItem(KNOWLEDGE_BASES_KEY, JSON.stringify(storableBases));
+    // Don't store the icon component, only its name
+    const dataToStore = data.map(({ icon, ...rest }) => rest);
+    localStorage.setItem(KNOWLEDGE_BASES_KEY, JSON.stringify(dataToStore));
   } catch (error) {
-    console.error("Failed to save knowledge bases to localStorage", error);
+    console.error('Failed to save knowledge bases to localStorage', error);
   }
 };
